@@ -11,5 +11,4 @@ def get_customers():
     
     customers = json.loads(response.text)
     for customer in customers:
-        print(customer['first_name'])
-    
+        print(customer['_id'])

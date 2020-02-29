@@ -4,7 +4,7 @@ import json
 import random
 import string
 
-api_key = "5e069ae4f90746158075478b37e7d4b6"
+
 url = "http://api.reimaginebanking.com/customers?key={}".format(api_key)
 
 def get_customers():

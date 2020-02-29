@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% from 'bootstrap/form.html' import render_form %}
+
+{% block content %}
+<div class="container">
+    <h1>Purchase</h1>
+    {{ render_form(form) }} 
+</div>
+{% endblock %}

@@ -1,11 +1,17 @@
 from app import app
 from flask import jsonify, request, render_template, redirect, flash
 from app.forms import LoginForm
+import customers
 
 @app.route('/')
 @app.route('/index')
 def index():
     return render_template("hello.html")
+
+@app.route('/customers', methods = ['GET'])
+def customer():
+    customers.get_customers()
+    return render_template("user.html")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

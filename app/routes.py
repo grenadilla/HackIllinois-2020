@@ -9,4 +9,4 @@ def index():
 
 @app.route('/request')
 def request():
-    return customers.request();
+    return customers.purchase_data();

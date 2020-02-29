@@ -4,4 +4,4 @@ from flask import jsonify, request, render_template
 @app.route('/')
 @app.route('/index')
 def index():
-    return "Hello World"
+    return render_template("hello.html")

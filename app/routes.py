@@ -11,6 +11,7 @@ def index():
 @app.route('/customers', methods = ['GET'])
 def customer():
     customers.get_customers()
+    customers.get_fake_customers()
     return render_template("user.html")
 
 @app.route('/login', methods=['GET', 'POST'])

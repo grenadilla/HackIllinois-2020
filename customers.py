@@ -4,8 +4,10 @@ import json
 import random
 import string
 
+api_key = "5e069ae4f90746158075478b37e7d4b6"
+url = "http://api.reimaginebanking.com/customers?key={}".format(api_key)
+
 def get_customers():
-    url = "http://api.reimaginebanking.com/customers?key=5e069ae4f90746158075478b37e7d4b6"
     response = requests.get(url, headers={'content-type':'application/json'})
     if response.status_code == 201:
 	    print('account created')
@@ -14,16 +16,10 @@ def get_customers():
     for customer in customers:
         print(customer['first_name'])
 
-def randomString(stringLength):
-    """Generate a random string of fixed length """
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(stringLength))
-
-def generate_json():
-
-    first_name = randomString(10)
-    last_name = randomString(3)
-    fake_customer = {
+def generate_customer_json():
+    first_name = randomString(5)
+    last_name = randomString(5)
+    customer = {
       "first_name": first_name,
       "last_name": last_name,
       "address": {
@@ -34,6 +30,17 @@ def generate_json():
         "zip": ""
       }
     }
-    return fake_customer
+    return json.dumps(customer)
 
-print(generate_json())
+def post_customers(num_customers):
+    for i in range(num_customers):
+        response = requests.post(
+        	url,
+        	data=generate_customer_json(),
+        	headers={'content-type':'application/json'},
+        	)
+
+def randomString(stringLength):
+    """Generate a random string of fixed length """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(stringLength))

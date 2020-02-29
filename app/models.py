@@ -32,11 +32,12 @@ class Account(db.Model):
     nickname = db.Column(db.String())
     rewards = db.Column(db.Integer)
     balance = db.Column(db.Integer)
+    account_number = db.Column(db.String(24))
     user_id = db.Column(db.String(24), db.ForeignKey('users.id'))
     account_type_id = db.Column(db.String(24), db.ForeignKey('account_types.id'))
 
     def __repr__(self):
-        return '<Account {}>'.format(self.account_id)
+        return '<{}>'.format(self.nickname)
     
 class AccountType(db.Model):
     __tablename__ = 'account_types'

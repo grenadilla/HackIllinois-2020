@@ -10,36 +10,44 @@ def purchase_data(customer):
     payload = {'key': Config.API_KEY}
 
     months = generate_months()
-
     account_purchases = {}
-    account_loans = {}
-    for i, account in enumerate(accounts):
+    for account in accounts:
         purchase_amounts = ([0] * 12)
         purchaseUrl = '{}accounts/{}/purchases'.format(Config.API_URL, account.account_id)
-        loanUrl = '{}accounts/{}/loans'.format(Config.API_URL, account.account_id)
         purchase_response = requests.get(purchaseUrl, headers={'content-type':'application/json'}, params=payload)
-        loan_response = requests.get(loanUrl, headers={'content-type':'application/json'}, params=payload)
 
-        if (loan_response.status_code == 200 and purchase_response.status_code == 200):
-            loans = json.loads(loan_response.text)
+        if (purchase_response.status_code == 200):
             purchases = json.loads(purchase_response.text)
 
             for purchase in purchases:
                 purchase_date = datetime.strptime(purchase['purchase_date'][:10], '%Y-%m-%d')
-                for j in range(12):
-                    if (purchase_date >= months[j]):
-                        purchase_amounts[j] += purchase['amount']
+                for i in range(12):
+                    if (purchase_date >= months[i]):
+                        purchase_amounts[i] += purchase['amount']
                         break
 
+            account_purchases[account.account_id] = purchase_amounts
+
+    return account_purchases
+
+def loan_data(customer):
+    accounts = Account.query.filter(Account.user == customer).all()
+    payload = {'key': Config.API_KEY}
+    account_loans = {}
+
+    for account in accounts:
+        loanUrl = '{}accounts/{}/loans'.format(Config.API_URL, account.account_id)
+        loan_response = requests.get(loanUrl, headers={'content-type':'application/json'}, params=payload)
+
+        if (loan_response.status_code == 200):
+            loans = json.loads(loan_response.text)
             loan_amount_payments = []
             for loan in loans:
                 loan_amount_payments.append(loan['monthly_payment'])
 
-            account_purchases[account.account_id] = purchase_amounts
             account_loans[account.account_id] = loan_amount_payments
 
-    return (account_purchases, account_loans)
-            
+    return account_loans
 
 def generate_months():
     midmonth = []

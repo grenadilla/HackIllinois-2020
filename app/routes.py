@@ -1,6 +1,6 @@
 from app import app
 from flask import jsonify, request, render_template
-import customers
+import pl
 
 @app.route('/')
 @app.route('/index')
@@ -9,4 +9,4 @@ def index():
 
 @app.route('/request')
 def request():
-    return customers.purchase_data();
+    return pl.purchase_data();

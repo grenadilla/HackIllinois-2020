@@ -47,7 +47,8 @@ def create_accounts():
                     else:
                         a_num = ""
                     new_account = Account(account_id=account["_id"], nickname=account["nickname"], 
-                        rewards=account["rewards"], balance=account["balance"], account_number=a_num, account_type=a_type)
+                        rewards=account["rewards"], balance=account["balance"], account_number=a_num, user=user,
+                        account_type=a_type)
                     db.session.add(new_account)
             db.session.commit()
 

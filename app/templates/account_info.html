@@ -4,32 +4,81 @@
 {{ super() }}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script>
-    let purchase_history;
+    let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    let purchase_history = new Array(12).fill(0);
+    let deposit_history = new Array(12).fill(0);
+    let net_history = new Array(12).fill(0);
     let data;
-    let layout = {
-        title: 'Purchase History',
+
+    let layout1 = {
+        title: '',
         yaxis: {
             rangemode: 'nonnegative',
             autorange: true
           }
     }
+
+    let layout2 = {
+        title: 'Net History',
+        yaxis: {
+            autorange: true
+          }
+    }
     {% for account in accounts %}
-        purchase_history = {{ account.purchase_history }}
-        data = [
+        {% if account.purchase_history is defined %}
+        purchase_history = {{ account.purchase_history }};
+        {% endif %}
+
+        {% if account.deposit_history is defined %}
+        deposit_history = {{ account.deposit_history }};
+        {% endif %}
+
+        for (let i = 0; i < 12; i++) {
+            net_history[i] = deposit_history[i] - purchase_history[i];
+        }
+
+        purchase_data = [
             {
-                x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                x: months,
                 y: purchase_history,
                 type: 'bar'
             }
         ];
 
-        Plotly.newPlot('purchase-history-{{ account.id }}', data, layout);
+        deposit_data = [
+            {
+                x: months,
+                y: deposit_history,
+                type: 'bar'
+            }
+        ];
+
+        net_data = [
+            {
+                x: months,
+                y: net_history,
+                type: 'bar'
+            }
+        ]
+        
+        {% if account.purchase_history is defined %}
+        layout1.title = 'Purchase History'
+        Plotly.newPlot('purchase-history-{{ account.id }}', purchase_data, layout1);
+        {% endif %}
+        {% if account.deposit_history is defined %}
+        layout1.title = 'Deposit History'
+        Plotly.newPlot('deposit-history-{{ account.id }}', deposit_data, layout1);
+        {% endif %}
+        {% if account.purchase_history is defined and account.deposit_history is defined%}
+        Plotly.newPlot('net-history-{{ account.id }}', net_data, layout2);
+        {% endif %}
     {% endfor %}
 </script>
 {% endblock %}
 
 {% block content %}
 <div class="container">
+<h1>{{ user.username }}</h1>
 {% if accounts %}
 
 <ul class="list-group">
@@ -43,8 +92,16 @@
     <p><b>Rewards: </b>{{ account.rewards }}</p>
     <p><b>Balance: </b>{{ account.balance }}</p>
 
-    {% if account.purchase_history %}
+    {% if account.purchase_history is defined %}
     <div id="purchase-history-{{ account.id }}"></div>
+    {% endif %}
+
+    {% if account.deposit_history is defined %}
+    <div id="deposit-history-{{ account.id }}"></div>
+    {% endif %}
+
+    {% if account.purchase_history is defined and account.deposit_history is defined %}
+    <div id="net-history-{{ account.id }}"></div>
     {% endif %}
 
     {% if account.loan_data|length > 0 %}

@@ -29,6 +29,31 @@ def purchase_data(customer):
 
     return account_purchases
 
+def deposit_data(customer):
+    accounts = Account.query.filter(Account.user == customer).all()
+    payload = {'key': Config.API_KEY}
+
+    months = generate_months()
+    account_deposits = {}
+    for account in accounts:
+        deposit_amounts = ([0] * 12)
+        depositUrl = '{}accounts/{}/deposits'.format(Config.API_URL, account.account_id)
+        deposit_response = requests.get(depositUrl, headers={'content-type':'application/json'}, params=payload)
+
+        if (deposit_response.status_code == 200):
+            deposits = json.loads(deposit_response.text)
+
+            for deposit in deposits:
+                deposit_date = datetime.strptime(deposit['transaction_date'][:10], '%Y-%m-%d')
+                for i in range(12):
+                    if (deposit_date >= months[i]):
+                        deposit_amounts[i] += deposit['amount']
+                        break
+
+            account_deposits[account.account_id] = deposit_amounts
+
+    return account_deposits
+
 def loan_data(customer):
     accounts = Account.query.filter(Account.user == customer).all()
     payload = {'key': Config.API_KEY}

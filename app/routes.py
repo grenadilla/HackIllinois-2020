@@ -8,12 +8,12 @@ from datetime import datetime
 import requests
 import json
 from config import Config
-from purchase_loan_data import loan_data, purchase_data
+from pld_info import loan_data, purchase_data, deposit_data
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template("hello.html")
+    return redirect(url_for('accounts'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -37,8 +37,8 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@login_required
 @app.route('/purchase', methods=['GET', 'POST'])
+@login_required
 def purchase():
     form = PurchaseForm()
     accounts = Account.query.filter(Account.user == current_user)
@@ -72,12 +72,13 @@ def purchase():
 
     return render_template('basic_form.html', message="Make Purchase", form=form)
 
-@login_required
 @app.route('/accounts')
+@login_required
 def accounts():
     accounts = current_user.accounts
     loans = loan_data(current_user)
     purchases = purchase_data(current_user)
+    deposits = deposit_data(current_user)
     for key, value in loans.items():
         for account in accounts:
             if key == account.account_id:
@@ -86,4 +87,8 @@ def accounts():
         for account in accounts:
             if key == account.account_id:
                 account.purchase_history = value
-    return render_template('account_info.html', accounts=accounts)
+    for key,value in deposits.items():
+        for deposit in deposits:
+            if key == account.account_id:
+                account.deposit_history = value
+    return render_template('account_info.html', user=current_user, accounts=accounts)

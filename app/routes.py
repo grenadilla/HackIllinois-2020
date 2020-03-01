@@ -8,7 +8,7 @@ from datetime import datetime
 import requests
 import json
 from config import Config
-from purchase_loan_data import loan_data
+from purchase_loan_data import loan_data, purchase_data
 
 @app.route('/')
 @app.route('/index')
@@ -77,8 +77,13 @@ def purchase():
 def accounts():
     accounts = current_user.accounts
     loans = loan_data(current_user)
+    purchases = purchase_data(current_user)
     for key, value in loans.items():
         for account in accounts:
             if key == account.account_id:
                 account.loan_data = value
-    return render_template('account_info.html', accounts=accounts, loan_data=loan_data)
+    for key, value in purchases.items():
+        for account in accounts:
+            if key == account.account_id:
+                account.purchase_history = value
+    return render_template('account_info.html', accounts=accounts)

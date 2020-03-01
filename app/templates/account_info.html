@@ -1,5 +1,33 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    let purchase_history;
+    let data;
+    let layout = {
+        title: 'Purchase History',
+        yaxis: {
+            rangemode: 'nonnegative',
+            autorange: true
+          }
+    }
+    {% for account in accounts %}
+        purchase_history = {{ account.purchase_history }}
+        data = [
+            {
+                x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                y: purchase_history,
+                type: 'bar'
+            }
+        ];
+
+        Plotly.newPlot('purchase-history-{{ account.id }}', data, layout);
+    {% endfor %}
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
 {% if accounts %}
@@ -14,6 +42,10 @@
     <p><b>Type: </b>{{ account.account_type.name }}</p>
     <p><b>Rewards: </b>{{ account.rewards }}</p>
     <p><b>Balance: </b>{{ account.balance }}</p>
+
+    {% if account.purchase_history %}
+    <div id="purchase-history-{{ account.id }}"></div>
+    {% endif %}
 
     {% if account.loan_data|length > 0 %}
     <h4>Loans:</h4>

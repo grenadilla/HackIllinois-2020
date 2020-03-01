@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+{% if accounts %}
+
+<ul class="list-group">
+{% for account in accounts %}
+<li class="list-group-item">
+    <h2>{{ account.nickname }}</h2>
+    {% if account.account_number is defined and account.account_number != "" %}
+    <p><b>Account Number: </b>{{ account.account_number }}</p>
+    {% endif %}
+    <p><b>Type: </b>{{ account.account_type.name }}</p>
+    <p><b>Rewards: </b>{{ account.rewards }}</p>
+    <p><b>Balance: </b>{{ account.balance }}</p>
+</li>
+{% endfor %}
+</ul>
+
+{% else %}
+<h1>No accounts found</h1>
+{% endif %}
+</div>
+{% endblock %}

@@ -43,7 +43,7 @@ def purchase():
     accounts = Account.query.filter(Account.user == current_user)
     choices = []
     for account in accounts:
-        choices.append((str(account.account_id), account.account_type.name))
+        choices.append((str(account.account_id), account.nickname + ' (' + account.account_type.name + ')'))
     form.account.choices = choices
     if form.validate_on_submit():
         post_request = {
@@ -70,3 +70,9 @@ def purchase():
         return redirect(url_for('purchase'))
 
     return render_template('basic_form.html', message="Make Purchase", form=form)
+
+@login_required
+@app.route('/accounts')
+def accounts():
+    accounts = current_user.accounts
+    return render_template('account_info.html', accounts=accounts)

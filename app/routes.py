@@ -3,7 +3,7 @@ from flask import jsonify, request, render_template, redirect, flash, url_for
 from werkzeug.urls import url_parse
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import LoginForm, PurchaseForm
-from app.models import User
+from app.models import User, Account
 from datetime import datetime
 import requests
 import json
@@ -40,6 +40,11 @@ def logout():
 @app.route('/purchase', methods=['GET', 'POST'])
 def purchase():
     form = PurchaseForm()
+    accounts = Account.query.filter(Account.user == current_user)
+    choices = []
+    for account in accounts:
+        choices.append((str(account.account_id), account.account_type.name))
+    form.account.choices = choices
     if form.validate_on_submit():
         post_request = {
             "merchant_id": form.merchant_id.data,
@@ -52,7 +57,7 @@ def purchase():
 
         json_request = json.dumps(post_request)
         payload = {'key': Config.API_KEY}
-        response = requests.post(('{}accounts/{}/purchases').format(Config.API_URL, Config.API_ACCOUNT_ID), 
+        response = requests.post(('{}accounts/{}/purchases').format(Config.API_URL, form.account.data), 
             params=payload, data=json_request, headers={'content-type': 'application/json'})
 
         if response.status_code == 200 or response.status_code == 201:

@@ -1,7 +1,6 @@
 import requests
 import json
 from datetime import datetime
-from collections import OrderedDict
 from config import Config
 from app.models import Account
 
@@ -41,11 +40,12 @@ def loan_data(customer):
 
         if (loan_response.status_code == 200):
             loans = json.loads(loan_response.text)
-            loan_amount_payments = []
+            loan_data = []
             for loan in loans:
-                loan_amount_payments.append(loan['monthly_payment'])
+                # monthly payment, amount
+                loan_data.append((loan['monthly_payment'], loan['amount']))
 
-            account_loans[account.account_id] = loan_amount_payments
+            account_loans[account.account_id] = loan_data
 
     return account_loans
 

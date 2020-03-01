@@ -14,6 +14,24 @@
     <p><b>Type: </b>{{ account.account_type.name }}</p>
     <p><b>Rewards: </b>{{ account.rewards }}</p>
     <p><b>Balance: </b>{{ account.balance }}</p>
+
+    {% if account.loan_data|length > 0 %}
+    <h4>Loans:</h4>
+    <table class="table">
+        <thead>
+            <th scope="col">Monthly Payment</th>
+            <th scope="col">Total Amount</th>
+        </thead>
+        <tbody>
+            {% for loan in account.loan_data %}
+            <tr>
+                <td>{{ loan[0] }}</td>
+                <td>{{ loan[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 </li>
 {% endfor %}
 </ul>
